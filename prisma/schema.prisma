@@ -11,3 +11,220 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum UserRole {
+  OWNER
+  ADMIN
+  STAFF
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  role          UserRole  @default(OWNER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts            Account[]
+  sessions            Session[]
+  passwordResetTokens PasswordResetToken[]
+  restaurants         Restaurant[]
+
+  @@map("users")
+}
+
+model Restaurant {
+  id                  String   @id @default(cuid())
+  ownerId             String
+  slug                String   @unique
+  name                String
+  logoUrl             String?
+  phone               String?
+  email               String?
+  address             String?
+  city                String?
+  country             String?
+  openingHours        Json?
+  instagramUrl        String?
+  facebookUrl         String?
+  tiktokUrl           String?
+  websiteUrl          String?
+  photos              String[]
+  menuUrl             String?
+  reservationUrl      String?
+  reservationProvider String?
+  importSourceUrl     String?
+  resourceId          String?  @unique
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  resource Resource? @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+
+  @@index([ownerId])
+  @@map("restaurants")
+}
+
+// ============================================================================
+// Booking Engine — vertical-agnostic. Nothing below this line may reference
+// "Restaurant"; a Resource is any bookable thing (a restaurant today, a
+// garage bay, a clinic room, a salon chair, a hotel room tomorrow). The link
+// from a specific vertical to a Resource lives on that vertical's own model
+// (see Restaurant.resourceId above), never the other way around.
+// ============================================================================
+
+enum Weekday {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+model Resource {
+  id        String   @id @default(cuid())
+  name      String
+  timezone  String   @default("Europe/Paris")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  availabilityRules AvailabilityRule[]
+  specialClosures   SpecialClosure[]
+  bookingSettings   BookingSettings?
+  reservations      Reservation[]
+  restaurant        Restaurant?
+
+  @@map("booking_resources")
+}
+
+model AvailabilityRule {
+  id         String  @id @default(cuid())
+  resourceId String
+  dayOfWeek  Weekday
+  opensAt    String
+  closesAt   String
+
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([resourceId, dayOfWeek])
+  @@map("booking_availability_rules")
+}
+
+model SpecialClosure {
+  id         String   @id @default(cuid())
+  resourceId String
+  date       DateTime @db.Date
+  startTime  String?
+  endTime    String?
+  reason     String?
+
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([resourceId, date])
+  @@map("booking_special_closures")
+}
+
+model BookingSettings {
+  id                        String   @id @default(cuid())
+  resourceId                String   @unique
+  slotIntervalMinutes       Int      @default(15)
+  averageDurationMinutes    Int      @default(90)
+  bufferMinutes             Int      @default(15)
+  maxPartySize              Int      @default(12)
+  maxConcurrentReservations Int      @default(5)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@map("booking_settings")
+}
+
+model Reservation {
+  id            String            @id @default(cuid())
+  resourceId    String
+  date          DateTime          @db.Date
+  startTime     String
+  endTime       String
+  partySize     Int
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  comment       String?
+  status        ReservationStatus @default(PENDING)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([resourceId, date])
+  @@map("booking_reservations")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
