@@ -27,3 +27,21 @@ export async function provisionResource(input: {
 
   return resource.id;
 }
+
+/** Replaces a Resource's AvailabilityRule set with the ones derived from a
+ * new weekly-hours input — atomically, so the Booking Engine never sees a
+ * half-updated (or momentarily empty) schedule. Used when an owner edits
+ * their restaurant's hours after the restaurant already exists. */
+export async function syncAvailabilityRules(
+  resourceId: string,
+  weeklyHours: WeeklyHoursInput[],
+): Promise<void> {
+  const rules = weeklyHoursToAvailabilityRules(weeklyHours);
+
+  await prisma.$transaction([
+    prisma.availabilityRule.deleteMany({ where: { resourceId } }),
+    ...(rules.length > 0
+      ? [prisma.availabilityRule.createMany({ data: rules.map((rule) => ({ ...rule, resourceId })) })]
+      : []),
+  ]);
+}

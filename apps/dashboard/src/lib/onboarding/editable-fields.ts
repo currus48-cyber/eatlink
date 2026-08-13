@@ -28,7 +28,7 @@ export function toEditableFields(data: RestaurantImportData): EditableRestaurant
     address: data.address.value ?? "",
     city: data.city.value ?? "",
     country: data.country.value ?? "",
-    openingHours: data.openingHours.value ?? defaultOpeningHours(),
+    openingHours: data.openingHours.value ?? standardOpeningHours(),
     instagramUrl: data.instagramUrl.value ?? "",
     facebookUrl: data.facebookUrl.value ?? "",
     tiktokUrl: data.tiktokUrl.value ?? "",
@@ -40,6 +40,9 @@ export function toEditableFields(data: RestaurantImportData): EditableRestaurant
   };
 }
 
-function defaultOpeningHours(): OpeningHoursEntry[] {
-  return ALL_DAYS.map((day) => ({ day, opens: null, closes: null, closed: true }));
+// The MVP fallback when the Import Engine can't detect hours: a reasonable
+// default the owner can immediately see and adjust, rather than every day
+// looking closed (which would silently block bookings until noticed).
+export function standardOpeningHours(): OpeningHoursEntry[] {
+  return ALL_DAYS.map((day) => ({ day, opens: "12:00", closes: "22:00", closed: false }));
 }

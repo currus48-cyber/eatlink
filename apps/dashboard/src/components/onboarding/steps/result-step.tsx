@@ -80,12 +80,25 @@ export function ResultStep({
 
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <Label>Horaires</Label>
-            <ConfidenceBadge confidence={confidence.openingHours.confidence} />
+            <Label>Vérifiez vos horaires</Label>
+            {confidence.openingHours.confidence > 0 ? (
+              <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                Détectés automatiquement
+              </span>
+            ) : (
+              <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                Horaires standards proposés
+              </span>
+            )}
           </div>
           <OpeningHoursEditor
             value={values.openingHours}
             onChange={(value) => onChange({ ...values, openingHours: value })}
+            notice={
+              confidence.openingHours.confidence > 0
+                ? undefined
+                : "Nous n'avons pas pu détecter vos horaires : voici une proposition par défaut. Vérifiez-les et ajustez-les avant de continuer."
+            }
           />
         </div>
 

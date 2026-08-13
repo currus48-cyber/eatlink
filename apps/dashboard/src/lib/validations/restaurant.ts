@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ALL_DAYS, type DayOfWeek } from "@/lib/import-engine/types";
+import { openingHoursSchema } from "@/lib/validations/opening-hours";
 
 const optionalUrlField = z
   .string()
@@ -20,14 +20,7 @@ export const restaurantInputSchema = z.object({
   address: z.string().trim().max(200),
   city: z.string().trim().max(100),
   country: z.string().trim().max(100),
-  openingHours: z.array(
-    z.object({
-      day: z.enum(ALL_DAYS as unknown as [DayOfWeek, ...DayOfWeek[]]),
-      opens: z.string().nullable(),
-      closes: z.string().nullable(),
-      closed: z.boolean(),
-    }),
-  ),
+  openingHours: openingHoursSchema,
   instagramUrl: optionalUrlField,
   facebookUrl: optionalUrlField,
   tiktokUrl: optionalUrlField,

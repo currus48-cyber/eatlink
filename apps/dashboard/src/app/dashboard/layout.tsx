@@ -28,6 +28,9 @@ export default async function DashboardLayout({
             <Link href="/dashboard/reservations" className="hover:text-foreground">
               Réservations
             </Link>
+            <Link href="/dashboard/restaurant" className="hover:text-foreground">
+              Horaires
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-4">

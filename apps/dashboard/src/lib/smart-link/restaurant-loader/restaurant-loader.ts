@@ -37,7 +37,9 @@ export async function loadRestaurantBySlug(slug: string): Promise<PublicRestaura
 // The `openingHours` column is a loosely-typed Json column; this only trusts
 // values that structurally match what save-restaurant.ts writes, and drops
 // anything malformed rather than letting a bad shape crash the public page.
-function parseOpeningHours(value: unknown): OpeningHoursEntry[] | null {
+// Exported for reuse anywhere else that reads this column (e.g. the
+// dashboard's hours settings page).
+export function parseOpeningHours(value: unknown): OpeningHoursEntry[] | null {
   if (!Array.isArray(value) || value.length === 0) {
     return null;
   }
