@@ -31,7 +31,7 @@ export function RestaurantHoursForm({
     startSaving(async () => {
       const result = await updateOpeningHoursAction(openingHours);
       if (result.status === "success") {
-        setFeedback({ type: "success", text: "Horaires mis à jour." });
+        setFeedback({ type: "success", text: "Horaires enregistrés ✓" });
       } else {
         setFeedback({ type: "error", text: result.message });
       }
@@ -43,8 +43,8 @@ export function RestaurantHoursForm({
       <CardHeader>
         <CardTitle>{restaurantName}</CardTitle>
         <CardDescription>
-          Ces horaires déterminent à la fois ce qui s&apos;affiche sur votre page publique et les
-          créneaux proposés à la réservation.
+          Ces horaires déterminent les disponibilités proposées à vos clients, ainsi que ce qui
+          s&apos;affiche sur votre page publique.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -53,7 +53,7 @@ export function RestaurantHoursForm({
           <p
             className={
               feedback.type === "success"
-                ? "text-sm text-emerald-600 dark:text-emerald-400"
+                ? "text-sm font-medium text-success"
                 : "text-sm text-destructive"
             }
           >
@@ -63,7 +63,7 @@ export function RestaurantHoursForm({
       </CardContent>
       <CardFooter>
         <Button onClick={handleSave} disabled={isSaving}>
-          {isSaving ? "Enregistrement..." : "Enregistrer"}
+          {isSaving ? "Enregistrement..." : "Enregistrer les horaires"}
         </Button>
       </CardFooter>
     </Card>

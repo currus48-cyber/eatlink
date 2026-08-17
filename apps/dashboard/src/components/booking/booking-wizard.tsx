@@ -8,6 +8,7 @@ import { getAvailableSlotsAction } from "@/lib/booking/actions/get-available-slo
 import { todayDateOnly } from "@/lib/booking/domain/time";
 import type { ReservationInput } from "@/lib/booking/types";
 
+import { ReservationSummaryCard } from "./reservation-summary-card";
 import { ConfirmationStep } from "./steps/confirmation-step";
 import { DateStep } from "./steps/date-step";
 import { DetailsStep } from "./steps/details-step";
@@ -23,12 +24,18 @@ const STEPS: WizardStepConfig[] = [
   { key: "confirmation", label: "Confirmation" },
 ];
 
+export interface BookingWizardRestaurant {
+  slug: string;
+  name: string;
+  logoUrl: string | null;
+}
+
 export function BookingWizard({
   resourceId,
-  restaurantName,
+  restaurant,
 }: {
   resourceId: string;
-  restaurantName: string;
+  restaurant: BookingWizardRestaurant;
 }) {
   const today = todayDateOnly();
   const [step, setStep] = useState<BookingWizardStep>("date");
@@ -107,8 +114,17 @@ export function BookingWizard({
   }
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="flex w-full flex-col gap-4">
       <WizardProgress steps={STEPS} currentKey={step} />
+
+      {step !== "date" && step !== "confirmation" && (
+        <ReservationSummaryCard
+          restaurantName={restaurant.name}
+          date={date}
+          time={step === "details" ? selectedSlot : null}
+          partySize={step !== "party-size" ? partySize : null}
+        />
+      )}
 
       {step === "date" && (
         <DateStep
@@ -135,6 +151,7 @@ export function BookingWizard({
           error={slotError}
           onSelect={handleSlotSelect}
           onBack={() => setStep("party-size")}
+          onBackToDate={() => setStep("date")}
         />
       )}
 
@@ -150,7 +167,7 @@ export function BookingWizard({
 
       {step === "confirmation" && selectedSlot && (
         <ConfirmationStep
-          restaurantName={restaurantName}
+          restaurant={restaurant}
           date={date}
           time={selectedSlot}
           partySize={partySize}

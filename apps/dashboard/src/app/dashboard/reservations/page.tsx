@@ -32,7 +32,7 @@ export default async function ReservationsPage() {
   if (!restaurant?.resourceId) {
     return (
       <div className="flex flex-col gap-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Réservations</h1>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Réservations</h1>
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle>Aucun restaurant configuré</CardTitle>
@@ -49,7 +49,7 @@ export default async function ReservationsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Réservations</h1>
+      <h1 className="font-heading text-3xl font-semibold tracking-tight">Réservations</h1>
       <ReservationTabs view={view} />
     </div>
   );

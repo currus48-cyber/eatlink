@@ -10,11 +10,15 @@ export function ReservationList({
   readOnly?: boolean;
 }) {
   if (reservations.length === 0) {
-    return <p className="py-8 text-center text-sm text-muted-foreground">Aucune réservation.</p>;
+    return (
+      <p className="rounded-lg border border-dashed py-10 text-center text-sm text-muted-foreground">
+        Aucune réservation.
+      </p>
+    );
   }
 
   return (
-    <div className="flex flex-col divide-y divide-border rounded-lg border">
+    <div className="flex flex-col gap-2">
       {reservations.map((reservation) => (
         <ReservationRow key={reservation.id} reservation={reservation} readOnly={readOnly} />
       ))}

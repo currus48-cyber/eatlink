@@ -5,7 +5,6 @@ import { auth } from "@/auth";
 import { RestaurantHoursForm } from "@/components/dashboard/restaurant-hours-form";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -35,7 +34,7 @@ export default async function RestaurantSettingsPage() {
   if (!restaurant) {
     return (
       <div className="flex flex-col gap-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Horaires</h1>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Horaires</h1>
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle>Aucun restaurant configuré</CardTitle>
@@ -52,7 +51,7 @@ export default async function RestaurantSettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Horaires</h1>
+      <h1 className="font-heading text-3xl font-semibold tracking-tight">Horaires</h1>
       <RestaurantHoursForm restaurantName={restaurant.name} initialOpeningHours={openingHours} />
     </div>
   );

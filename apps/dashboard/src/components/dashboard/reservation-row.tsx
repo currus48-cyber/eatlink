@@ -5,16 +5,17 @@ import { useState, useTransition } from "react";
 import { updateDashboardReservationStatus } from "@/actions/dashboard/update-reservation-status";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { RESERVATION_STATUS_LABELS } from "@/lib/booking/domain/reservation-status";
 import type { ReservationRecord, ReservationStatus } from "@/lib/booking/types";
 import { formatDateFr } from "@/lib/format-date";
 
 const STATUS_BADGE_VARIANT: Record<
   ReservationStatus,
-  "default" | "secondary" | "destructive" | "outline"
+  "success" | "secondary" | "destructive" | "warning"
 > = {
-  PENDING: "outline",
-  CONFIRMED: "default",
+  PENDING: "warning",
+  CONFIRMED: "success",
   CANCELLED: "destructive",
   COMPLETED: "secondary",
   NO_SHOW: "destructive",
@@ -44,68 +45,71 @@ export function ReservationRow({
   }
 
   return (
-    <div className="flex flex-col gap-2 p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-col gap-0.5">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">
-            {formatDateFr(reservation.date)} · {reservation.startTime}
+    <Card size="sm">
+      <div className="flex flex-col gap-3 px-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-base font-semibold tabular-nums">{reservation.startTime}</span>
+            <span className="text-muted-foreground">{formatDateFr(reservation.date)}</span>
+            <Badge variant={STATUS_BADGE_VARIANT[status]}>{RESERVATION_STATUS_LABELS[status]}</Badge>
+          </div>
+          <span className="font-medium text-foreground">
+            {reservation.customerName} · {reservation.partySize}{" "}
+            {reservation.partySize > 1 ? "personnes" : "personne"}
           </span>
-          <Badge variant={STATUS_BADGE_VARIANT[status]}>{RESERVATION_STATUS_LABELS[status]}</Badge>
+          <span className="text-muted-foreground">{reservation.customerPhone}</span>
+          {reservation.customerEmail && (
+            <span className="text-muted-foreground">{reservation.customerEmail}</span>
+          )}
+          {reservation.comment && (
+            <span className="text-muted-foreground italic">« {reservation.comment} »</span>
+          )}
+          {error && <span className="text-destructive">{error}</span>}
         </div>
-        <span className="text-muted-foreground">
-          {reservation.customerName} · {reservation.partySize} pers. · {reservation.customerPhone}
-        </span>
-        {reservation.customerEmail && (
-          <span className="text-muted-foreground">{reservation.customerEmail}</span>
-        )}
-        {reservation.comment && (
-          <span className="text-muted-foreground italic">« {reservation.comment} »</span>
-        )}
-        {error && <span className="text-destructive">{error}</span>}
-      </div>
 
-      {!readOnly && (
-        <div className="flex flex-wrap gap-2">
-          {status === "PENDING" && (
-            <>
-              <Button size="sm" disabled={isPending} onClick={() => handleUpdate("CONFIRMED")}>
-                Confirmer
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={isPending}
-                onClick={() => handleUpdate("CANCELLED")}
-              >
-                Annuler
-              </Button>
-            </>
-          )}
-          {status === "CONFIRMED" && (
-            <>
-              <Button size="sm" disabled={isPending} onClick={() => handleUpdate("COMPLETED")}>
-                Terminée
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={isPending}
-                onClick={() => handleUpdate("NO_SHOW")}
-              >
-                Absence
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={isPending}
-                onClick={() => handleUpdate("CANCELLED")}
-              >
-                Annuler
-              </Button>
-            </>
-          )}
-        </div>
-      )}
-    </div>
+        {!readOnly && (
+          <div className="flex flex-wrap gap-2">
+            {status === "PENDING" && (
+              <>
+                <Button size="sm" disabled={isPending} onClick={() => handleUpdate("CONFIRMED")}>
+                  Confirmer
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isPending}
+                  onClick={() => handleUpdate("CANCELLED")}
+                >
+                  Annuler
+                </Button>
+              </>
+            )}
+            {status === "CONFIRMED" && (
+              <>
+                <Button size="sm" disabled={isPending} onClick={() => handleUpdate("COMPLETED")}>
+                  Terminée
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isPending}
+                  onClick={() => handleUpdate("NO_SHOW")}
+                >
+                  Absence
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isPending}
+                  onClick={() => handleUpdate("CANCELLED")}
+                >
+                  Annuler
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </Card>
   );
 }

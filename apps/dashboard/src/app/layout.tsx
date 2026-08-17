@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Bricolage_Grotesque, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { auth } from "@/auth";
 import { SessionProvider } from "@/components/providers/session-provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// EatLink brand typefaces — Archivo for UI/body, Bricolage Grotesque for
+// restaurant identity and headings. See globals.css for how these feed the
+// `font-sans` / `font-heading` theme tokens.
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+});
+
+const bricolageGrotesque = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
 });
 
@@ -26,7 +34,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${archivo.variable} ${bricolageGrotesque.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <SessionProvider session={session}>{children}</SessionProvider>

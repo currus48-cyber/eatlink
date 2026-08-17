@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ContactCard } from "@/components/restaurant-public/contact-card";
+import { EatLinkFooterNote } from "@/components/restaurant-public/eatlink-footer-note";
 import { GoogleMapCard } from "@/components/restaurant-public/google-map-card";
 import { OpeningHoursCard } from "@/components/restaurant-public/opening-hours-card";
 import { PhotoGallery } from "@/components/restaurant-public/photo-gallery";
-import { RestaurantHeader } from "@/components/restaurant-public/restaurant-header";
 import { RestaurantHero } from "@/components/restaurant-public/restaurant-hero";
+import { RestaurantIdentityBar } from "@/components/restaurant-public/restaurant-identity-bar";
 import { SocialLinksCard } from "@/components/restaurant-public/social-links-card";
 import { buildRestaurantMetadata } from "@/lib/smart-link/metadata/metadata-builder";
 import { loadRestaurantBySlug } from "@/lib/smart-link/restaurant-loader/restaurant-loader";
@@ -41,10 +42,15 @@ export default async function RestaurantPublicPage({ params }: { params: Params 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      <RestaurantHeader restaurant={restaurant} />
+      <RestaurantIdentityBar
+        name={restaurant.name}
+        logoUrl={restaurant.logoUrl}
+        city={restaurant.city}
+        country={restaurant.country}
+      />
       <RestaurantHero restaurant={restaurant} />
 
-      <main className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6">
+      <main className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-4 py-12 sm:px-6">
         {galleryPhotos.length > 0 && <PhotoGallery photos={galleryPhotos} />}
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -55,6 +61,8 @@ export default async function RestaurantPublicPage({ params }: { params: Params 
         <GoogleMapCard restaurant={restaurant} />
         <SocialLinksCard restaurant={restaurant} />
       </main>
+
+      <EatLinkFooterNote />
     </div>
   );
 }

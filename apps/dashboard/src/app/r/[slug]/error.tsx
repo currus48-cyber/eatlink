@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertTriangle } from "lucide-react";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -31,14 +32,19 @@ export default function RestaurantPageError({
   return (
     <div className="flex min-h-svh items-center justify-center bg-muted/30 p-6">
       <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Page temporairement indisponible</CardTitle>
-          <CardDescription>
-            Une erreur est survenue de notre côté. Merci de réessayer dans quelques instants.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={reset}>Réessayer</Button>
+        <CardContent className="flex flex-col items-center gap-4 pt-6 text-center">
+          <span className="flex size-12 items-center justify-center rounded-full bg-warning-tint text-warning">
+            <AlertTriangle className="size-6" />
+          </span>
+          <CardHeader className="gap-1 p-0">
+            <CardTitle>Page temporairement indisponible</CardTitle>
+            <CardDescription>
+              Une erreur est survenue de notre côté. Merci de réessayer dans quelques instants.
+            </CardDescription>
+          </CardHeader>
+          <Button onClick={reset} className="w-full">
+            Réessayer
+          </Button>
         </CardContent>
       </Card>
     </div>
